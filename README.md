@@ -59,10 +59,12 @@ For this you have to install python3.9 or higher. You can change service port by
 - Finally
 > python duplicat-prometheus-exporter
 
+## Forwarding
+You can forward requests to other reporters using the `DUPLICATI_FORWARD_URL`. For example, you might want to use Duplicati Cloud for reporting states of several machines.
+
 ## DEBUG
 Debug can be done by using LOG_LEVEL environment variable, supported values:
 `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`.
 
 ## PULL REQUESTS
 Hello everyone, i'm developing from scratch and I have no much experience with prometheus library, feel free to send any issues or open any pull requests to improve the source code. Any help is welcome (:
-
