@@ -7,10 +7,13 @@ from prometheus_client.core import CollectorRegistry
 from prometheus_client import Summary, Counter, Gauge
 from classes.duplicati import Duplicati
 import logging
+import requests
 
 logging.basicConfig(level=f"{os.getenv('LOG_LEVEL', 'INFO')}", format="%(asctime)s - %(levelname)s - %(message)s")
 
 app = Flask(__name__)
+
+forward_url = os.getenv("DUPLICATI_FORWARD_URL", None)
 
 graphs = {}
 graphs["duplicati_backup_ops"] = Counter(
@@ -247,6 +250,13 @@ def post_backup():
             ),
             400,
         )
+
+    if forward_url:
+        try:
+            requests.post(forward_url, json=data)
+            logging.debug(f"forwarded request to {forward_url}")
+        except Exception as e:
+            logging.error(f"Failed to forward backup data: {e}")
 
     return response
 
