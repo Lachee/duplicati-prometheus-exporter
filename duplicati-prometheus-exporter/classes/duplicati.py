@@ -21,6 +21,8 @@ class Duplicati:
         else:
             self.is_last_backup_failed = 0
             self.operation_name = result.get("Extra")["OperationName"]
+            self.machine_id = result.get("Extra")["machine-id"]
+            self.machine_name = result.get("Extra")["machine-name"]
             self.backup_name = result.get("Extra")["backup-name"]
             self.result = result.get("Data")["ParsedResult"]
             self.begin_time = self.convert_epoch(result.get("Data")["BeginTime"])

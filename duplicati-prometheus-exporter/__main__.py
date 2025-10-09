@@ -19,63 +19,63 @@ graphs = {}
 graphs["duplicati_backup_ops"] = Counter(
     "duplicati_backup_ops",
     "The total number of backups done",
-    ["operation_name", "backup_name", "result"],
+    ["operation_name", "machine_id", "machine_name", "backup_name", "result"],
 )
 graphs["duplicati_begin_time"] = Gauge(
-    "duplicati_begin_time", "Begin Time", ["backup_name", "operation_name", "result"]
+    "duplicati_begin_time", "Begin Time", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_end_time"] = Gauge(
-    "duplicati_end_time", "End Time", ["backup_name", "operation_name", "result"]
+    "duplicati_end_time", "End Time", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_duration"] = Gauge(
-    "duplicati_duration", "Duration", ["backup_name", "operation_name", "result"]
+    "duplicati_duration", "Duration", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_backup_list_count"] = Gauge(
     "duplicati_backup_list_count",
     "Backup List Count",
-    ["backup_name", "operation_name", "result"],
+    ["machine_id", "machine_name", "backup_name", "operation_name", "result"],
 )
 graphs["duplicati_bytes_uploaded"] = Gauge(
-    "duplicati_bytes_uploaded", "Bytes Uploaded", ["backup_name", "operation_name", "result"]
+    "duplicati_bytes_uploaded", "Bytes Uploaded", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_bytes_downloaded"] = Gauge(
-    "duplicati_bytes_downloaded", "Bytes Downloaded", ["backup_name", "operation_name", "result"]
+    "duplicati_bytes_downloaded", "Bytes Downloaded", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_files_uploaded"] = Gauge(
-    "duplicati_files_uploaded", "Files Uploaded", ["backup_name", "operation_name", "result"]
+    "duplicati_files_uploaded", "Files Uploaded", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_files_downloaded"] = Gauge(
-    "duplicati_files_downloaded", "Files Downloaded", ["backup_name", "operation_name", "result"]
+    "duplicati_files_downloaded", "Files Downloaded", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_files_deleted"] = Gauge(
-    "duplicati_files_deleted", "Files Deleted", ["backup_name", "operation_name", "result"]
+    "duplicati_files_deleted", "Files Deleted", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_folders_created"] = Gauge(
-    "duplicati_folders_created", "Folders Created", ["backup_name", "operation_name", "result"]
+    "duplicati_folders_created", "Folders Created", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_free_quota_space"] = Gauge(
-    "duplicati_free_quota_space", "Free Quota Space", ["backup_name", "operation_name", "result"]
+    "duplicati_free_quota_space", "Free Quota Space", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_known_file_size"] = Gauge(
-    "duplicati_known_file_size", "Size of backup", ["backup_name", "operation_name", "result"]
+    "duplicati_known_file_size", "Size of backup", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_size_of_examined_files"] = Gauge(
-    "duplicati_size_of_examined_files", "Size of source data", ["backup_name", "operation_name", "result"]
+    "duplicati_size_of_examined_files", "Size of source data", ["machine_id", "machine_name", "backup_name", "operation_name", "result"]
 )
 graphs["duplicati_total_quota_space"] = Gauge(
     "duplicati_total_quota_space",
     "Total Quota Space",
-    ["backup_name", "operation_name", "result"],
+    ["machine_id", "machine_name", "backup_name", "operation_name", "result"],
 )
 graphs["duplicati_is_last_backup_failed"] = Gauge(
     "duplicati_is_last_backup_failed",
     "1 means last backup failed",
-    ["backup_name"],
+    ["machine_id", "machine_name", "backup_name"],
 )
 graphs["duplicati_ops_result"] = Gauge(
     "duplicati_ops_result",
     "Last Duplicati operation result, 0 means Success, 1 Warning and 2 Fail",
-    ["backup_name", "operation_name"],
+    ["machine_id", "machine_name", "backup_name", "operation_name"],
 )
 
 
@@ -83,6 +83,8 @@ graphs["duplicati_backup_summary"] = Summary(
     "duplicati_backup_summary",
     "Summary of duplicati backup jobs",
     [
+        "machine_id", 
+        "machine_name", 
         "backup_name",
         "result",
         "begin_time",
@@ -104,6 +106,8 @@ graphs["duplicati_backup_summary"] = Summary(
 def backup_inc(backup):
     graphs["duplicati_backup_ops"].labels(
         operation_name=backup.operation_name,
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         result=backup.result,
     ).inc()
@@ -111,6 +115,8 @@ def backup_inc(backup):
 
 def backup_summary(backup):
     graphs["duplicati_backup_summary"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         result=backup.result,
         begin_time=backup.begin_time,
@@ -130,71 +136,99 @@ def backup_summary(backup):
 
 def backup_gauge(backup):
     graphs["duplicati_begin_time"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.begin_time)
     graphs["duplicati_end_time"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.end_time)
     graphs["duplicati_duration"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.duration)
     graphs["duplicati_backup_list_count"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.backup_list_count)
     graphs["duplicati_bytes_uploaded"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.bytes_uploaded)
     graphs["duplicati_bytes_downloaded"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.bytes_downloaded)
     graphs["duplicati_files_uploaded"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.files_uploaded)
     graphs["duplicati_files_downloaded"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.files_downloaded)
     graphs["duplicati_files_deleted"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.files_deleted)
     graphs["duplicati_folders_created"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.folders_created)
     graphs["duplicati_free_quota_space"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.free_quota_space)
     graphs["duplicati_total_quota_space"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.total_quota_space)
     graphs["duplicati_known_file_size"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
     ).set(backup.known_file_size)
     graphs["duplicati_size_of_examined_files"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
         result=backup.result,
@@ -202,6 +236,8 @@ def backup_gauge(backup):
 
 def is_last_backup_failed(backup):
     graphs["duplicati_is_last_backup_failed"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
     ).set(backup.is_last_backup_failed)
 
@@ -213,6 +249,8 @@ def last_ops_result(backup):
     else:
         status = 2
     graphs["duplicati_ops_result"].labels(
+        machine_id=backup.machine_id,
+        machine_name=backup.machine_name,
         backup_name=backup.backup_name,
         operation_name=backup.operation_name,
     ).set(status)
